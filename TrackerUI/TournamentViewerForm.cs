@@ -86,13 +86,49 @@ namespace TrackerUI
 
         private void LoadMatchup()
         {
+            MatchupModel m = (MatchupModel)matchupListBox.SelectedItem;
+            if (m != null)
+            {
+                for (int i = 0; i < m.Entries.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        if (m.Entries[0].TeamCompeting != null)
+                        {
+                            teamOneLabel.Text = m.Entries[0].TeamCompeting.TeamName;
+                            teamOneScoreValue.Text = m.Entries[0].Score.ToString();
+                            teamTwoLabel.Text = "<bye>";
+                            teamTwoScoreValue.Text = "0";
+                        }
+                        else
+                        {
+                            teamOneLabel.Text = "Not yet Set";
+                            teamOneScoreValue.Text = "";
 
+                        }
+                    }
+                    if (i == 1)
+                    {
+                        if (m.Entries[1].TeamCompeting != null)
+                        {
+                            teamTwoLabel.Text = m.Entries[1].TeamCompeting.TeamName;
+                            teamTwoScoreValue.Text = m.Entries[1].Score.ToString();
+                        }
+                        else
+                        {
+                            teamTwoLabel.Text = "Not yet Set";
+                            teamTwoScoreValue.Text = "";
+                        }
+                    }
+                }
+            }
+            
         }
 
 
         private void matchupListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //LoadMatchups();
+            LoadMatchup();
         }
 
 
