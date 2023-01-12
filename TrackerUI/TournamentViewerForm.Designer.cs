@@ -92,8 +92,6 @@ namespace TrackerUI
             // unplayedOnlyCheckBox
             // 
             this.unplayedOnlyCheckBox.AutoSize = true;
-            this.unplayedOnlyCheckBox.Checked = true;
-            this.unplayedOnlyCheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
             this.unplayedOnlyCheckBox.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.unplayedOnlyCheckBox.Location = new System.Drawing.Point(102, 144);
             this.unplayedOnlyCheckBox.Name = "unplayedOnlyCheckBox";
@@ -194,6 +192,7 @@ namespace TrackerUI
             this.scoreButton.TabIndex = 13;
             this.scoreButton.Text = "Score";
             this.scoreButton.UseVisualStyleBackColor = true;
+            this.scoreButton.Click += new System.EventHandler(this.scoreButton_Click);
             // 
             // TournamentViewerForm
             // 
@@ -225,10 +224,7 @@ namespace TrackerUI
 
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+
 
         private void label1_Click(object sender, EventArgs e)
         {
