@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TrackerLibrary;
 using TrackerLibrary.Models;
 
 namespace TrackerUI
@@ -182,7 +183,7 @@ namespace TrackerUI
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            //LoadMatchups();
+            LoadMatchups();
             LoadMatchup();
         }
 
@@ -246,7 +247,29 @@ namespace TrackerUI
                     m.Winner = m.Entries[1].TeamCompeting;
 
                 }
+                foreach (List<MatchupModel> round in tournament.Rounds)
+                {
+                    foreach(MatchupModel roundMatchup in round)
+                    {
+                        foreach (MatchupEntryModel entry in roundMatchup.Entries) 
+                        {
+                            if (entry.ParentMatchup != null)
+                            {
+                                if (entry.ParentMatchup.Id == m.Id)
+                                {
+                                    entry.TeamCompeting = m.Winner;
+                                    GlobalConfig.Connection.UpdateMatchup(roundMatchup);
+
+                                } 
+                            }
+                        }
+                    }
+                }
+                {
+
+                }
                 LoadMatchups();
+                GlobalConfig.Connection.UpdateMatchup(m);
             }
             
 

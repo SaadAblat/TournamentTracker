@@ -310,10 +310,34 @@ namespace TrackerLibrary.DataAccess
             return output;
         }
 
-        //@PlaceNumber int,
-        //@PlaceName nvarchar(50),
-        //@PrizeAmount money,
-        //@PrizePercentage float,
-        //@id int = 0 output
+        public void UpdateMatchup(MatchupModel model)
+        {
+            using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(GlobalConfig.CnnString(db)))
+            {
+                var p = new DynamicParameters();
+                if (model.Winner != null)
+                {
+                    p.Add("@id", model.Id);
+                    p.Add("@WinnerId", model.Winner.Id);
+                    connection.Execute("dbo.spMatchups_Update ", p, commandType: CommandType.StoredProcedure); 
+                }
+                //dbo.spMatchupEntries_Update     @id int,   @TeamCompetingId int = null,
+                foreach (MatchupEntryModel entry in model.Entries)
+                {
+                    if (entry.TeamCompeting != null)
+                    {
+                        p = new DynamicParameters();
+                        p.Add("@id", entry.Id);
+                        p.Add("@TeamCompetingId", entry.TeamCompeting.Id);
+                        p.Add("@Score", entry.Score);
+                        connection.Execute("dbo.spMatchupEntries_Update ", p, commandType: CommandType.StoredProcedure); 
+                    }
+                }
+            }
+
+
+
+        }
+
     }
 }
