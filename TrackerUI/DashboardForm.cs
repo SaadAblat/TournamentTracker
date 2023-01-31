@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TrackerLibrary;
 using TrackerLibrary.Models;
+using TrackLibrary;
 
 namespace TrackerUI
 {
@@ -42,6 +43,7 @@ namespace TrackerUI
         {
             TournamentModel tm = (TournamentModel)tournamentsDropDown.SelectedItem;
             TournamentViewerForm frm = new TournamentViewerForm(tm);
+            TournamentLogic.UpdateTournamentsResults(tm);
             frm.Show();
         }
     }

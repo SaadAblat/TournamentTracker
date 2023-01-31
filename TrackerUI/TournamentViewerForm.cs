@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TrackerLibrary;
 using TrackerLibrary.Models;
+using TrackLibrary;
 
 namespace TrackerUI
 {
@@ -232,51 +233,9 @@ namespace TrackerUI
                         }
                     }
                 }
-                // Declaring the winner by comparing The two team's score
-                if (teamOneScore > teamTwoScore)
-                {
-                    m.Winner = m.Entries[0].TeamCompeting;
-                }
-                else if (teamOneScore == teamTwoScore)
-                {
-                    MessageBox.Show("This application doesn't handle tie games");
-
-                }
-                else
-                {
-                    m.Winner = m.Entries[1].TeamCompeting;
-
-                }
-                foreach (List<MatchupModel> round in tournament.Rounds)
-                {
-                    foreach(MatchupModel roundMatchup in round)
-                    {
-                        foreach (MatchupEntryModel entry in roundMatchup.Entries) 
-                        {
-                            if (entry.ParentMatchup != null)
-                            {
-                                if (entry.ParentMatchup.Id == m.Id)
-                                {
-                                    entry.TeamCompeting = m.Winner;
-                                    GlobalConfig.Connection.UpdateMatchup(roundMatchup);
-
-                                } 
-                            }
-                        }
-                    }
-                }
-                {
-
-                }
+                TournamentLogic.UpdateTournamentsResults(tournament);
                 LoadMatchups();
-                GlobalConfig.Connection.UpdateMatchup(m);
             }
-            
-
-
-
         }
-
-
     }
 }

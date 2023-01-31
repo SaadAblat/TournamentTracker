@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrackerLibrary;
 using TrackerLibrary.Models;
 
 namespace TrackLibrary
@@ -21,6 +23,122 @@ namespace TrackLibrary
             int byes = NumberOfByes(rounds, randomizedTeams.Count);
             model.Rounds.Add(CreateFirstRound(byes, randomizedTeams));
             CreateOtherRounds(model, rounds);
+        }
+        public static void UpdateTournamentsResults(TournamentModel model)
+        {
+            List<MatchupModel> toScore = new List<MatchupModel>();
+            foreach(List<MatchupModel> round in model.Rounds)
+            {
+                foreach(MatchupModel rm in round)
+                {
+                    if (rm.Winner == null && (rm.Entries.Any(x => x.Score != 0) || rm.Entries.Count == 1))
+                    {
+                        toScore.Add(rm);
+                    }
+                }
+            }
+
+            MarkWinnersInMatchups(toScore);
+            AdvanceWinners(toScore, model);
+
+            toScore.ForEach(x => GlobalConfig.Connection.UpdateMatchup(x));
+            // equivalent to 
+            // foreach(MatchupModel x in toScore)
+            // {
+            //  GlobalConfig.Connection.UpdateMachup(m);
+            // }
+        }
+
+
+        private static void AdvanceWinners(List<MatchupModel> models, TournamentModel tournamentModel)
+        {
+            foreach (MatchupModel m in models)
+            {
+                foreach (List<MatchupModel> round in tournamentModel.Rounds)
+                {
+                    foreach (MatchupModel roundMatchup in round)
+                    {
+                        foreach (MatchupEntryModel entry in roundMatchup.Entries)
+                        {
+                            if (entry.ParentMatchup != null)
+                            {
+                                if (entry.ParentMatchup.Id == m.Id)
+                                {
+                                    entry.TeamCompeting = m.Winner;
+                                    GlobalConfig.Connection.UpdateMatchup(roundMatchup);
+                                }
+                            }
+                        }
+                    }
+                } 
+            }
+        }
+        private static void MarkWinnersInMatchups(List<MatchupModel> models)
+        {
+            string greaterWins = ConfigurationManager.AppSettings["greaterWins"];
+            foreach (MatchupModel m in models) 
+            {
+                //0 means false, low score wins :
+                if (greaterWins == "0")
+                {
+                    if (m.Entries.Count == 1)
+                    {
+                        m.Winner = m.Entries[0].TeamCompeting;
+                        continue;
+                    }
+
+                    if (m.Entries[0].Score < m.Entries[1].Score)
+                    {
+                        m.Winner = m.Entries[0].TeamCompeting;
+                    }
+                    else if (m.Entries[0].Score == m.Entries[1].Score)
+                    {
+                        throw new Exception("This application doesn't handle tie games");
+                    }
+                    else
+                    {
+                        m.Winner = m.Entries[1].TeamCompeting;
+                    }
+                }
+                // else including 1 : high score wins 
+                else
+                {
+                    //handle the bye week teams;
+                    if (m.Entries.Count == 1)
+                    {
+                        m.Winner = m.Entries[0].TeamCompeting;
+                        continue;
+                    }
+
+                    if (m.Entries[0].Score > m.Entries[1].Score)
+                    {
+                        m.Winner = m.Entries[0].TeamCompeting;
+                    }
+                    else if (m.Entries[0].Score == m.Entries[1].Score)
+                    {
+                        throw new Exception("This application doesn't handle tie games");
+                    }
+                    else
+                    {
+                        m.Winner = m.Entries[1].TeamCompeting;
+                    }
+                }
+            }
+            //// Declaring the winner by comparing The two team's score
+            //if (teamOneScore > teamTwoScore)
+            //{
+            //    m.Winner = m.Entries[0].TeamCompeting;
+            //}
+            //else if (teamOneScore == teamTwoScore)
+            //{
+            //    MessageBox.Show("This application doesn't handle tie games");
+
+            //}
+            //else
+            //{
+            //    m.Winner = m.Entries[1].TeamCompeting;
+
+            //}
         }
         public static void CreateOtherRounds(TournamentModel model , int rounds) 
         {
