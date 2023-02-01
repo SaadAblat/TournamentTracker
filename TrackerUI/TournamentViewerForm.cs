@@ -187,9 +187,49 @@ namespace TrackerUI
             LoadMatchups();
             LoadMatchup();
         }
+        private string ValidateFormat()
+        {
+            string output = "";
 
+            bool teamOneValid = double.TryParse(teamOneScoreValue.Text, out double teamOneScore);
+            bool teamTwoValid = double.TryParse(teamTwoScoreValue.Text, out double teamTwoScore);
+
+
+            if (!teamOneValid && !teamTwoValid)
+            {
+                output = " Both teams formats are not valid";
+            }
+            else if (!teamOneValid)
+            {
+                output = " Team one format is not valid";
+            }
+            else if (!teamTwoValid)
+            {
+                output = " Team two format is not valid";
+            }
+
+
+            else if (teamOneScore ==0 && teamTwoScore == 0)
+            {
+                output = " You did not enter a score for either teams";
+            }
+            else if (teamOneScore == teamTwoScore )
+            {
+                output = " This application doesn't allow ties";
+            }
+
+            return output;
+        }
         private void scoreButton_Click(object sender, EventArgs e)
         {
+            string errorMessage = ValidateFormat();
+            if (errorMessage.Length > 0)
+            {
+                MessageBox.Show(errorMessage);
+                return;
+            }
+
+
             MatchupModel m = (MatchupModel)matchupListBox.SelectedItem;
             double teamOneScore = 0;
             double teamTwoScore = 0;
@@ -233,7 +273,15 @@ namespace TrackerUI
                         }
                     }
                 }
-                TournamentLogic.UpdateTournamentsResults(tournament);
+                try
+                {
+                    TournamentLogic.UpdateTournamentsResults(tournament);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"The application have the following error{ex.Message}");
+                    return;
+                }
                 LoadMatchups();
             }
         }
