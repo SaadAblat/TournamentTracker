@@ -25,9 +25,16 @@ namespace TrackerUI
         {
             InitializeComponent();
             tournament = tournamentModel;
+
+            tournament.OnTournamentComplete += Tournament_OnTournamentComplete;
             LoadFormData();
             LoadRounds();
             //LoadMatchups();
+        }
+
+        private void Tournament_OnTournamentComplete(object sender, string e)
+        {
+            this.Close();
         }
 
         private void LoadFormData()

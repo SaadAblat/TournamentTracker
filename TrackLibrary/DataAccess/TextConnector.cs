@@ -114,5 +114,10 @@ namespace TrackerLibrary.DataAccess
         {
             // lesson 23 53:00 
         }
+
+        public void CompleteTournament(TournamentModel tournamentModel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
